@@ -1,0 +1,18 @@
+<?php
+/**
+* Copyright © PH2M SARL. All rights reserved.
+* See LICENSE for license details.
+*/
+declare(strict_types=1);
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\Store as StoreViewModel;
+use Magento\Framework\Escaper;
+
+/** @var ViewModelRegistry $viewModels */
+/** @var StoreViewModel $storeViewModel */
+$storeViewModel = $viewModels->require(StoreViewModel::class);
+?>
+<script>
+    var CURRENT_STORE_ID = '<?= /* @noEscape */ $storeViewModel->getStoreId(); ?>';
+</script>

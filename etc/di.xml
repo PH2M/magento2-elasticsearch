@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!--
+/**
+* Copyright © PH2M SARL. All rights reserved.
+* See LICENSE for license details.
+*/
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="Magento\Elasticsearch\Model\Adapter\Index\Builder">
+        <plugin name="ph2m_elasticsearch_index_builder"
+                type="PH2M\Elasticsearch\Plugin\Adapter\Index\Builder"/>
+    </type>
+    <type name="Magento\Elasticsearch7\Model\Client\Elasticsearch">
+        <arguments>
+            <argument name="fieldsMappingPreprocessors" xsi:type="array">
+                <item name="ph2m_elasticsearch_add_fields_params" xsi:type="object">PH2M\Elasticsearch\Model\Adapter\FieldMapper\AddFieldsParams</item>
+            </argument>
+        </arguments>
+    </type>
+    <virtualType name="additionalFieldsProviderForElasticsearch" type="Magento\AdvancedSearch\Model\Adapter\DataMapper\AdditionalFieldsProvider">
+        <arguments>
+            <argument name="fieldsProviders" xsi:type="array">
+                <item name="to_display" xsi:type="object">PH2M\Elasticsearch\Model\Adapter\BatchDataMapper\ToDisplayFieldsProvider</item>
+            </argument>
+        </arguments>
+    </virtualType>
+</config>
