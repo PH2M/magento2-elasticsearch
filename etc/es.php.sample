@@ -1,0 +1,147 @@
+<?php
+
+use Elasticsearch\ClientBuilder;
+
+require dirname(__DIR__) . '/app/bootstrap.php';
+$magentoEnv = dirname(__DIR__) . '/app/etc/env.php';
+
+$config = [
+    'app' => require $magentoEnv,
+];
+
+if (
+    empty($config['app']['system']['default']['catalog']['search']['elasticsearch7_server_hostname'])
+    || empty($config['app']['system']['default']['catalog']['search']['elasticsearch7_server_port'])
+    || empty($config['app']['system']['default']['catalog']['search']['elasticsearch7_index_prefix'])
+) {
+    echo json_encode([]);
+    exit;
+}
+
+$hostName = $config['app']['system']['default']['catalog']['search']['elasticsearch7_server_hostname'];
+$port = $config['app']['system']['default']['catalog']['search']['elasticsearch7_server_port'];
+$indexPrefix = $config['app']['system']['default']['catalog']['search']['elasticsearch7_index_prefix'];
+
+$clientBuilder = ClientBuilder::create();
+
+if (
+    !empty($config['app']['system']['default']['catalog']['search']['elasticsearch7_enable_auth'])
+    && $config['app']['system']['default']['catalog']['search']['elasticsearch7_enable_auth'] === '1') {
+    $clientBuilder->setBasicAuthentication(
+        $config['app']['system']['default']['catalog']['search']['elasticsearch7_username'],
+        $config['app']['system']['default']['catalog']['search']['elasticsearch7_password']
+    );
+}
+
+$client = $clientBuilder->setHosts([$hostName . ':' . $port])
+    ->build();
+
+$termToSearch = mb_strtolower($_GET['q']);
+
+$params = [
+    'index' => $indexPrefix . '_product_' . $_GET['store'],
+    'body' => [
+        'query' => [
+            'bool' => [
+                'should' => [
+                    [
+                        'multi_match' => [
+                            'query' => $termToSearch,
+                            'type' => 'cross_fields',
+                            'fields' => [
+                                'sku_to_search^50',
+                                'name^20',
+                                'brand_value^15',
+                                'name.prefix^10',
+                                'brand_value.prefix^5',
+                            ],
+                        ],
+                    ],
+                    [
+                        'fuzzy' => [
+                            'name' => [
+                                'value' => $termToSearch,
+                                'fuzziness' => 'AUTO',
+                            ],
+                        ],
+                    ],
+                    [
+                        'fuzzy' => [
+                            'brand_value' => [
+                                'value' => $termToSearch,
+                                'fuzziness' => 'AUTO',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
+    'size' => 12,
+    '_source' => ['name_to_display', 'sku', 'url_key', 'image', 'brand_value']
+];
+
+
+$results = $client->search($params);
+
+// clean hits by return only _source
+$results['hits']['hits'] = array_map(function ($hit) {
+    $urlKey = is_array($hit['_source']['url_key']) ? $hit['_source']['url_key'][0] : $hit['_source']['url_key'];
+    $hit['_source']['url_key'] = "/{$urlKey}.html";
+
+    if (!empty($hit['_source']['image'])) {
+        $hit['_source']['image'] = '/media/catalog/product' . $hit['_source']['image'];
+    }
+
+    return $hit['_source'];
+}, $results['hits']['hits']);
+
+/**********
+ * BRANDS *
+ *********/
+$params = [
+    'index' => $indexPrefix . '_brand_1',
+    'body' => [
+        'query' => [
+            'bool' => [
+                'should' => [
+                    [
+                        'multi_match' => [
+                            'query' => $termToSearch,
+                            'type' => 'cross_fields',
+                            'fields' => [
+                                'name',
+                            ],
+                        ],
+                    ],
+                    [
+                        'fuzzy' => [
+                            'name' => [
+                                'value' => $termToSearch,
+                                'fuzziness' => 'AUTO',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
+    'size' => 5,
+    '_source' => ['name', 'url_key']
+];
+$resultsBrands = $client->search($params);
+
+// clean hits by return only _source
+$resultsBrands['hits']['hits'] = array_map(function ($hit) {
+    $urlKey = $hit['_source']['url_key'];
+    $hit['_source']['url_key'] = "/brand/{$urlKey}";
+
+    return $hit['_source'];
+}, $resultsBrands['hits']['hits']);
+
+$resultsJson = [
+    'products' => $results['hits']['hits'],
+    'brands' => $resultsBrands['hits']['hits'],
+];
+
+echo json_encode($resultsJson);

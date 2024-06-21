@@ -10,16 +10,10 @@ class AddFieldsParams implements FieldsMappingPreprocessorInterface
     public function process(array $mapping): array
     {
         foreach ($mapping as $field => $definition) {
-            if ($field !== 'name') {
+            if (!in_array($field, ['name', 'brand_value'])) {
                 continue;
             }
 
-//            $definition['analyzer'] = 'french_heavy';
-
-            $definition['fields']['keyword_prefix'] = [
-                'type' => 'text',
-                'analyzer' => 'keyword_prefix',
-            ];
             $definition['fields']['prefix'] = [
                 'type' => 'text',
                 'analyzer' => 'text_prefix',
