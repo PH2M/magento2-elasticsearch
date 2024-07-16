@@ -1,6 +1,11 @@
 # Simple Magento 2 search with ElasticSearch
 
 ## Installation
+First, install the Magento module:
+```
+composer require ph2m/magento2-elasticsearch
+```
+
 You need to install the analysis-icu plugin for ElasticSearch.
 
 You have to lock the Elasticsearch configurations:
@@ -261,6 +266,10 @@ class SaveAfter implements ObserverInterface
     }
 }
 ```
+
+## Synonyms configuration
+You can add some synonyms in Stores > Configuration > Catalog > Catalog > Catalog Search > Search synonyms.
+Synonyms must be separated by commas, enter one synonyms group by line.
 
 ## Hyvä ready
 This module is designed for [Hyvä](https://www.hyva.io/) out of the box.

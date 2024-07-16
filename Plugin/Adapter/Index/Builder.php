@@ -1,14 +1,22 @@
 <?php
 /**
-* Copyright © PH2M SARL. All rights reserved.
-* See LICENSE for license details.
-*/
+ * Copyright © PH2M SARL. All rights reserved.
+ * See LICENSE for license details.
+ */
 declare(strict_types=1);
 
 namespace PH2M\Elasticsearch\Plugin\Adapter\Index;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\ScopeInterface;
+
 class Builder
 {
+    public function __construct(
+        protected ScopeConfigInterface $scopeConfig
+    ) {
+    }
+
     public function afterBuild(\Magento\Elasticsearch\Model\Adapter\Index\Builder $subject, array $result): array
     {
         if (empty($result['analysis']['analyzer'])) {
@@ -114,11 +122,15 @@ class Builder
             "filler_token" => ""
         ];
 
-        $result['analysis']['filter']["french_synonym"] = [
-            "type" => "synonym_graph",
-            "synonyms" => ["gel, creme, lotion"],
-            "expand" => true,
-        ];
+        $synonyms = $this->getSynonyms();
+
+        if (!empty($synonyms)) {
+            $result['analysis']['filter']["french_synonym"] = [
+                "type" => "synonym_graph",
+                "synonyms" => $synonyms,
+                "expand" => true,
+            ];
+        }
 
         $result['analysis']['filter']["stop_french"] = [
             "type" => "stop",
@@ -141,5 +153,11 @@ class Builder
         ];
 
         return $result;
+    }
+
+    protected function getSynonyms(): array
+    {
+        $config = $this->scopeConfig->getValue('catalog/search/synonyms', ScopeInterface::SCOPE_STORE);
+        return explode("\r\n", $config);
     }
 }
