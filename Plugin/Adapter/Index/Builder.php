@@ -110,6 +110,11 @@ class Builder
     protected function getSynonyms(): array
     {
         $config = $this->scopeConfig->getValue('catalog/search/synonyms', ScopeInterface::SCOPE_STORE);
+
+        if (empty($config)) {
+            return [];
+        }
+
         return explode("\r\n", $config);
     }
 }
