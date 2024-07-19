@@ -28,30 +28,8 @@ class Builder
             'asciifolding'
         ];
 
-        $result['analysis']['analyzer']['name_analyzer'] = [
-            'type' => 'custom',
-            "tokenizer" => "keyword",
-            "filter" => [
-                "lowercase",
-                "asciifolding"
-            ]
-        ];
-
         $result['analysis']['analyzer']['sku']['tokenizer'] = 'default_tokenizer';
         $result['analysis']['analyzer']['sku_prefix_search']['tokenizer'] = 'default_tokenizer';
-
-        $result['analysis']['analyzer']['french_heavy'] = [
-            'tokenizer' => 'icu_tokenizer',
-            'char_filter' => 'html_strip',
-            'filter' => [
-                'french_elision',
-                'icu_folding',
-                "french_synonym",
-                "default_stemmer",
-                'stop_french',
-                "lowercase",
-            ],
-        ];
 
         $result['analysis']['analyzer']['text_prefix'] = [
             'tokenizer' => 'standard',
@@ -62,28 +40,6 @@ class Builder
                 "lowercase",
                 "stop",
                 "edge_ngram_front",
-            ],
-        ];
-        $result['analysis']['analyzer']['keyword_prefix'] = [
-            'tokenizer' => 'keyword',
-            'char_filter' => 'html_strip',
-            'filter' => [
-                "asciifolding",
-                "lowercase",
-                "strip_spaces",
-                "strip_dots",
-                "strip_hyphens",
-                "edge_ngram_front"
-            ],
-        ];
-        $result['analysis']['analyzer']['trigram'] = [
-            "char_filter" => "html_strip",
-            "type" =>  "custom",
-            "tokenizer" => "icu_tokenizer",
-            'filter' => [
-                "lowercase",
-                "stop_french",
-                "shingle"
             ],
         ];
 
@@ -109,17 +65,10 @@ class Builder
             "replacement" => ""
         ];
         $result['analysis']['filter']["edge_ngram_front"] = [
-            "min_gram" => "1",
+            "min_gram" => "3",
             "side" => "front",
             "type" => "edgeNGram",
             "max_gram" => "20"
-        ];
-        $result['analysis']['filter']["shingle"] = [
-            "max_shingle_size" => "3",
-            "min_shingle_size" => "2",
-            "output_unigrams" => "false",
-            "type" => "shingle",
-            "filler_token" => ""
         ];
 
         $synonyms = $this->getSynonyms();
@@ -148,7 +97,10 @@ class Builder
                 "stop",
                 "length",
                 "french_synonym",
-                'default_stemmer'
+                'default_stemmer',
+                'strip_spaces',
+                'strip_dots',
+                'strip_hyphens'
             ],
         ];
 

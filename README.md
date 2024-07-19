@@ -25,55 +25,11 @@ cp vendor/ph2m/magento2-elasticsearch/etc/es.php.sample pub/es.php
 
 Update your `Magento_Theme/templates/html/header.phtml` file to include the search form.
 
-```html
-<input name="es_search"
-   id="es_search"
-   type="text"
-   placeholder="<?php echo __('Search a product or a brand') ?>"
-   class="!pr-[84px] w-full bg-gray-very-light-warm !h-18 text-dark placeholder:text-xxs placeholder:leading-5 focus:placeholder:font-normal !text-xl !leading-6.75"
-   @keyup="runSearch()" />
-<div class="absolute bottom-0 translate-y-full z-50 left-0 bg-white w-full grid grid-cols-4 gap-5 p-5 border" x-cloak x-show="results.length > 0">
-    <template x-for="result in results" :key="result.sku">
-        <a :href="result.url_key" class="flex items-center gap-3">
-            <img :src="result.image" :alt="result.name_to_display" width="80" height="80" />
-            <div class="flex flex-col">
-                <span x-text="result.name_to_display"></span>
-                <span class="text-xs" x-text="result.brand_value"></span>
-            </div>
-        </a>
-    </template>
-</div>
+```php
+<?php echo $block->getChildHtml('ph2m.elasticsearch.search.form') ?>
 ```
 
-And at the end of the file add the following script:
-```javascript
-<script>
-    function initSearch() {
-        return {
-            results: [],
-            runSearch() {
-                if (this.$el.value.length < 3) {
-                    this.results = [];
-                    return;
-                }
-
-                const url = BASE_URL + 'es.php?q=' + this.$el.value + '&store=' + CURRENT_STORE_ID;
-
-                fetch(url, {
-                    headers: { "content-type": "application/json" },
-                    method: "GET",
-                }).then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    }
-                }).then(result => {
-                    this.results = result;
-                });
-            }
-        }
-    }
-</script>
-```
+You can customize the template file `PH2M_Elasticsearch::search/form.phtml` in your theme.
 
 After installation, reindex.
 ```

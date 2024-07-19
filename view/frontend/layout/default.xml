@@ -10,5 +10,8 @@
         <referenceContainer name="head.additional">
             <block name="ph2m.elasticsearch.head.js" class="Magento\Framework\View\Element\Template" template="PH2M_Elasticsearch::page/js/variables.phtml"/>
         </referenceContainer>
+        <referenceBlock name="header-content">
+            <block name="ph2m.elasticsearch.search.form" class="Magento\Framework\View\Element\Template" template="PH2M_Elasticsearch::search/form.phtml"/>
+        </referenceBlock>
     </body>
 </page>

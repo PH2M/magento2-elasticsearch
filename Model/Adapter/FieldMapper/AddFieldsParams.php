@@ -18,6 +18,13 @@ class AddFieldsParams implements FieldsMappingPreprocessorInterface
                 'type' => 'text',
                 'analyzer' => 'text_prefix',
             ];
+            $definition['analyzer'] = 'std3';
+
+            if ($field !== 'name') {
+                $definition['fields']['keyword'] = [
+                    'type' => 'keyword'
+                ];
+            }
 
             $mapping[$field] = $definition;
         }
