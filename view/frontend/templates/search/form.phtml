@@ -6,13 +6,15 @@
 -->
 <div class="grow max-w-lg z-10 w-full mx-auto lg:order-2 order-last col-span-3 lg:col-span-1"
      id="search-content" x-data="initSearch">
-    <input name="es_search"
-           id="es_search"
-           type="text"
-           x-ref="essearch"
-           placeholder="<?php echo __('Search a product or a brand') ?>"
-           class="!pr-[84px] w-full bg-gray-very-light-warm !h-18 text-dark placeholder:text-xxs placeholder:leading-5 focus:placeholder:font-normal !text-xl !leading-6.75"
-           @keyup="runSearch()" />
+    <form action="<?php echo $block->getUrl('catalogsearch/result') ?>" method="get">
+        <input name="q"
+               id="es_search"
+               type="text"
+               x-ref="essearch"
+               placeholder="<?php echo __('Search a product or a brand') ?>"
+               class="!pr-[84px] w-full bg-gray-very-light-warm !h-18 text-dark placeholder:text-xxs placeholder:leading-5 focus:placeholder:font-normal !text-xl !leading-6.75"
+               @keyup="runSearch()" />
+    </form>
     <div class="absolute bottom-0 translate-y-full z-50 left-0 bg-white w-full grid grid-cols-4 gap-5 p-5 border" x-cloak x-show="products.length > 0 || brands.length > 0">
         <div class="flex flex-col border-r" x-show="brands.length > 0">
             <span class="font-semibold text-lg"><?php echo __('Brands') ?></span>
