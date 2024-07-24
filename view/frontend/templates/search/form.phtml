@@ -1,19 +1,24 @@
-<!--
+<?php
 /**
 * Copyright © PH2M SARL. All rights reserved.
 * See LICENSE for license details.
 */
--->
+
+/** @var Magento\Framework\View\Element\Template $block */
+?>
 <div class="grow max-w-lg z-10 w-full mx-auto lg:order-2 order-last col-span-3 lg:col-span-1"
      id="search-content" x-data="initSearch">
-    <form action="<?php echo $block->getUrl('catalogsearch/result') ?>" method="get">
+    <form action="<?php echo $block->getUrl('catalogsearch/result') ?>" method="get" class="relative">
         <input name="q"
                id="es_search"
                type="text"
                x-ref="essearch"
                placeholder="<?php echo __('Search a product or a brand') ?>"
-               class="!pr-[84px] w-full bg-gray-very-light-warm !h-18 text-dark placeholder:text-xxs placeholder:leading-5 focus:placeholder:font-normal !text-xl !leading-6.75"
+               class="w-full h-18"
                @keyup="runSearch()" />
+        <button class="absolute right-0 -translate-y-1/2 -translate-x-1/2 top-1/2" type="submit">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M16.041 15.856c-0.034 0.026-0.067 0.055-0.099 0.087s-0.060 0.064-0.087 0.099c-1.258 1.213-2.969 1.958-4.855 1.958-1.933 0-3.682-0.782-4.95-2.050s-2.050-3.017-2.050-4.95 0.782-3.682 2.050-4.95 3.017-2.050 4.95-2.050 3.682 0.782 4.95 2.050 2.050 3.017 2.050 4.95c0 1.886-0.745 3.597-1.959 4.856zM21.707 20.293l-3.675-3.675c1.231-1.54 1.968-3.493 1.968-5.618 0-2.485-1.008-4.736-2.636-6.364s-3.879-2.636-6.364-2.636-4.736 1.008-6.364 2.636-2.636 3.879-2.636 6.364 1.008 4.736 2.636 6.364 3.879 2.636 6.364 2.636c2.125 0 4.078-0.737 5.618-1.968l3.675 3.675c0.391 0.391 1.024 0.391 1.414 0s0.391-1.024 0-1.414z"></path></svg>
+        </button>
     </form>
     <div class="absolute bottom-0 translate-y-full z-50 left-0 bg-white w-full grid grid-cols-4 gap-5 p-5 border" x-cloak x-show="products.length > 0 || brands.length > 0">
         <div class="flex flex-col border-r" x-show="brands.length > 0">
