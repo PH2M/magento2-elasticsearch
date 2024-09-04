@@ -10,6 +10,7 @@ namespace PH2M\Elasticsearch\Model\Adapter\BatchDataMapper;
 use Magento\AdvancedSearch\Model\Adapter\DataMapper\AdditionalFieldsProviderInterface;
 use Magento\Catalog\Api\Data\ProductInterface;
 use Magento\Catalog\Api\ProductRepositoryInterface;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 
 class ToDisplayFieldsProvider implements AdditionalFieldsProviderInterface
@@ -32,10 +33,21 @@ class ToDisplayFieldsProvider implements AdditionalFieldsProviderInterface
 
         /** @var ProductInterface $product */
         foreach ($products as $product) {
+            $childrenSkus = [];
+
+            if ($product->getTypeId() === Configurable::TYPE_CODE) {
+                $children = $product->getTypeInstance()->getUsedProducts($product);
+
+                $childrenSkus = array_map(function ($child) {
+                    return $child->getSku();
+                }, $children);
+            }
+
             $fields[$product->getId()] = [
                 'name_to_display' => $product->getName(),
                 'sku_to_search' => $product->getSku(),
-                'image' => $product->getImage()
+                'image' => $product->getImage(),
+                'children_skus' => $childrenSkus
             ];
         }
 

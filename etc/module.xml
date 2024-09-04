@@ -10,6 +10,7 @@
     <module name="PH2M_Elasticsearch">
         <sequence>
             <module name="Magento_Elasticsearch"/>
+            <module name="Magento_CatalogDataExporter"/>
         </sequence>
     </module>
 </config>

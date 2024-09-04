@@ -25,4 +25,8 @@
             </argument>
         </arguments>
     </virtualType>
+
+    <type name="Magento\Config\Model\Config">
+        <plugin name="ph2m_elasticsearch_invalidate_search_index" type="PH2M\Elasticsearch\Plugin\Index\InvalidateOnConfigChange" />
+    </type>
 </config>

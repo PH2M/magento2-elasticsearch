@@ -11,8 +11,8 @@
             <group id="search">
                 <field id="synonyms" translate="label comment" type="textarea" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Search synonyms</label>
-                    <comment><![CDATA[Enter synonyms words by line, separated by commas, ie:<br />shirt,tee-shirt,top<br/>
-cat,feline,kitten]]></comment>
+                    <comment><![CDATA[Enter synonyms words by line, separated by commas, ie:<br />shirt,tee-shirt,top<br />
+cat,feline,kitten<br />Updating this field will trigger the catalog search reindexation.]]></comment>
                 </field>
             </group>
         </section>
